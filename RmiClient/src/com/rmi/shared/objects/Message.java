@@ -1,4 +1,4 @@
-package com.rmi.models;
+package com.rmi.shared.objects;
 
 import java.io.Serializable;
 

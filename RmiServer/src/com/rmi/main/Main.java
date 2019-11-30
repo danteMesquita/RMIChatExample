@@ -1,20 +1,19 @@
 package com.rmi.main;
 
+
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
-import com.rmi.models.Message;
-import com.rmi.models.User;
+import com.rmi.shared.objects.Message;
+import com.rmi.shared.objects.User;
+
 
 public class Main extends UnicastRemoteObject implements IRmiMethods  {
-	/*
-	 [ ] - Ao abrir o client abre no teminal perguntando qual o nome do usuário.
-	 [ ] - Tem que ser atualizado a cada 2,5 segundos as mensagens daquele usuário.
-	 [ ] -  
-	 */
+	
 	ArrayList<User> onLineUsers = new ArrayList<User>();
+	ArrayList<Message> allMessages = new ArrayList<Message>();
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -24,27 +23,42 @@ public class Main extends UnicastRemoteObject implements IRmiMethods  {
 	
 	@Override
 	public boolean login(User user) throws RemoteException {
+		try {
 		
-		
-		return false;
+			onLineUsers.add(user);
+			return true;
+		}catch(Exception ex) {
+			ex.printStackTrace();
+			return false;
+		}
 	}
 	
 	@Override
 	public boolean logoff(User user) throws RemoteException {
-		// TODO Auto-generated method stub
-		return false;
+		try {
+			
+			onLineUsers.remove(user);
+			return true;
+		}catch(Exception ex) {
+			ex.printStackTrace();
+			return false;
+		}
 	}
 		
 	@Override
 	public ArrayList<User> getOnlineUsersList() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.onLineUsers;
 	}
 		
 	@Override
 	public boolean sendMessage(Message msg) throws RemoteException {
-		// TODO Auto-generated method stub
-		return false;
+		try {
+			allMessages.add(msg);
+			return true;
+		}catch(Exception ex) {
+			ex.printStackTrace();
+			return false;
+		}
 	}
 	
 	@Override
