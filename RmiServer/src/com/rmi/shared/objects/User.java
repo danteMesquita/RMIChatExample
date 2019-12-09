@@ -5,16 +5,18 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
-public class User implements Serializable{
+public class User implements Serializable {
 	/**
 	 * 
 	 */
+	private static ArrayList<Message> userMessages = new ArrayList<Message>();
 	private static final long serialVersionUID = 1L;
 	private String id;
 	private String userName;
 	
-	protected User() {}
+	//protected User() {}
 	
 	public User(String _userName){
 		id = generateUniqueId();
@@ -51,4 +53,11 @@ public class User implements Serializable{
         return result;
     }
 	
+	public static void receiveMessage(Message message) {
+		userMessages.add(message);
+	}
+	
+	public static ArrayList<Message> getMessages() {
+		return userMessages;
+	}
 }

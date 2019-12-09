@@ -12,5 +12,6 @@ public interface IRmiMethods extends Remote {
 	public ArrayList<User> getOnlineUsersList() throws RemoteException;
 	public boolean login(User user) throws RemoteException;
 	public boolean logoff(User user) throws RemoteException; 
-	public ArrayList<User> getPendingMessagesByUser(User user) throws RemoteException;
+	public ArrayList<Message> getPendingMessagesByUser(String userId) throws RemoteException;
+	public User getUserById(String userId) throws RemoteException;
 }
