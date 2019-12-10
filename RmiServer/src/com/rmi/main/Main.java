@@ -39,8 +39,14 @@ public class Main extends UnicastRemoteObject implements IRmiMethods {
 	@Override
 	public boolean logoff(User user) throws RemoteException {
 		try {
-			onLineUsers.remove(user);
-			return true;
+			for(User currentUser : onLineUsers ) {
+				if(currentUser.getId().equals(user.getId())) {
+					onLineUsers.remove(currentUser);
+					return true;
+				}
+			}
+						
+			return false;
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return false;
@@ -70,7 +76,8 @@ public class Main extends UnicastRemoteObject implements IRmiMethods {
 		for (Message msg : allMessages) {
 			User user = msg.getToUser();
 			
-			if(user.getId().equals(userId)) {
+			if(user.getId().equals(userId) && !msg.isUserAlredyReceive()) {
+				msg.setUserAlredyReceive(true);
 				returnMessageList.add(msg);
 			}
 

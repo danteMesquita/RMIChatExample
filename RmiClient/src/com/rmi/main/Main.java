@@ -21,11 +21,13 @@ public class Main {
 			while(loop) {
 				Scanner scanner = new Scanner(System.in);
 				remoteObject = (IRmiMethods) Naming.lookup("//localhost/MyServer");
-				System.out.println("Digite seu nome para realizar login: ");
-				String userName = scanner.nextLine().trim();		
+				System.out.println("");
+				//String userName = scanner.nextLine().trim();
+				String userName = JOptionPane.showInputDialog("Digite seu nome para realizar login: ");
 				User newuser = new User(userName);
-							
+				
 				if(remoteObject.login(newuser)) {
+					startThread(remoteObject, newuser);
 					consoleClear();
 					printInitialmenu(newuser);
 					loop = false;
@@ -49,18 +51,19 @@ public class Main {
 			boolean continuousLoop = true;
 			while(continuousLoop) {
 				consoleClear();
-				System.out.println("");
-				System.out.println("#################################");
-				System.out.println("A qualquer momento digite: ");
-				System.out.println("/GET_ALL - Para listar todos usuários online");
-				System.out.println("/LOGOFF - Para sair do chat");
-				System.out.println("/REFRESH - Para atualizar as mensagens pendentes");
-				System.out.println("/MSG - Para enviar mensagem para um usuário específico.");
-				System.out.println("/START-THREAD - Para enviar mensagem para um usuário específico.");
-				System.out.println("#################################");
-				System.out.println("");
+				String menuText = "\n";
+				
+				menuText += user.getUserName() + ", operação realizada com sucesso! Seu id é: " + user.getId() + "\n";
+				menuText += "#################################\n";
+				menuText += "A qualquer momento digite: \n";
+				menuText += "/GET_ALL - Para listar todos usuários online\n";
+				menuText += "/LOGOFF - Para sair do chat\n";
+				menuText += "/REFRESH - Para atualizar as mensagens pendentes\n";
+				menuText += "/MSG - Para enviar mensagem para um usuário específico.\n";
+				menuText += "#################################\n";
+				
 				Scanner scanner = new Scanner(System.in);
-				String option = scanner.nextLine();
+				String option = JOptionPane.showInputDialog(menuText);
 								
 				switch(option) {
 					case "/GET_ALL":
@@ -109,9 +112,10 @@ public class Main {
 	private static boolean printLogoffAction(IRmiMethods remoteObject, User user) throws RemoteException {
 		try {
 			consoleClear();
-			if(remoteObject.logoff(user)) {
+			boolean exit = remoteObject.logoff(user);
+			if(exit) {
 				System.out.println("Usuário deslogado com sucesso");
-				return true;
+				System.exit(0);
 			}
 			
 			System.out.println("Houve um problema ao deslogar. Tenta novamente mais tarde. Ou feche o terminal");
@@ -145,9 +149,8 @@ public class Main {
 	private static void sendMessage(IRmiMethods remoteObject, User user) {
 		try {
 			consoleClear();
-			System.out.println("Digite o id do usuário que deseja enviar a mensagem: ");
 			Scanner scanner = new Scanner(System.in);
-			String destinyUserId = scanner.nextLine().trim();
+			String destinyUserId = JOptionPane.showInputDialog("Digite o id do usuário que deseja enviar a mensagem: ");
 				
 			User destinyUser = null;
 			destinyUser = remoteObject.getUserById(destinyUserId);
@@ -157,9 +160,9 @@ public class Main {
 				message.setFromUser(user);
 				message.setToUser(destinyUser);
 				
-				System.out.println("Digite a mensagem: ");				
+				// System.out.println("");				
 				Scanner scanner2 = new Scanner(System.in);
-				String textOfMessage = scanner2.nextLine();
+				String textOfMessage = JOptionPane.showInputDialog("Digite a mensagem: ");
 					
 				message.setMessage(textOfMessage.trim());
 				remoteObject.sendMessage(message);
@@ -193,5 +196,3 @@ public class Main {
 		}
 	}
 }
-
-

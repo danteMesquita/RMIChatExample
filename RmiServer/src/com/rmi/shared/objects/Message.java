@@ -9,6 +9,7 @@ public class Message implements Serializable {
 	private User fromUser;
 	private User toUser;
 	private String message;
+	private boolean userAlredyReceive = false;
 	
 	public User getFromUser() {
 		return fromUser;
@@ -30,6 +31,12 @@ public class Message implements Serializable {
 	}
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+	public boolean isUserAlredyReceive() {
+		return userAlredyReceive;
+	}
+	public void setUserAlredyReceive(boolean userAlredyReceive) {
+		this.userAlredyReceive = userAlredyReceive;
 	}
 	public String toString() {
 		return "De: " + fromUser.getUserName() + " - Para: " + toUser.getUserName() + " - Mensage: " + message;
