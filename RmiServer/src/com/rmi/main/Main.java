@@ -22,6 +22,12 @@ public class Main extends UnicastRemoteObject implements IRmiMethods {
 	@Override
 	public boolean login(User user) throws RemoteException {
 		try {
+			for(User currentUser : onLineUsers) {
+				if(currentUser.getUserName().equals(user.getUserName())) {
+					return false;
+				}
+			}
+			
 			onLineUsers.add(user);
 			return true;
 		} catch (Exception ex) {
@@ -62,7 +68,9 @@ public class Main extends UnicastRemoteObject implements IRmiMethods {
 		ArrayList<Message> returnMessageList = new ArrayList<Message>();
 		
 		for (Message msg : allMessages) {
-			if(msg.getToUser().getId().equals(userId)) {
+			User user = msg.getToUser();
+			
+			if(user.getId().equals(userId)) {
 				returnMessageList.add(msg);
 			}
 

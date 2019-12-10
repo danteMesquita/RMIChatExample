@@ -4,6 +4,7 @@ import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Scanner;
 
 import javax.swing.JOptionPane;
@@ -14,25 +15,26 @@ import com.rmi.shared.objects.User;
 public class Main {
 	private static IRmiMethods remoteObject;
 	
-	
 	public static void main(String[] args) throws Exception {
 		try {
-			Scanner scanner = new Scanner(System.in);
-			remoteObject = (IRmiMethods) Naming.lookup("//localhost/MyServer");
-			
-			System.out.println("Digite seu nome para realizar login: ");
-			String userName = scanner.nextLine().trim();
-			
-			User newuser = new User(userName);
-						
-			if(remoteObject.login(newuser)) {
-				//Start a thread
-				printInitialmenu(newuser);
-				
-			}else {
-				System.out.println("Falha ao realizar login");
+			boolean loop = true;
+			while(loop) {
+				Scanner scanner = new Scanner(System.in);
+				remoteObject = (IRmiMethods) Naming.lookup("//localhost/MyServer");
+				System.out.println("Digite seu nome para realizar login: ");
+				String userName = scanner.nextLine().trim();		
+				User newuser = new User(userName);
+							
+				if(remoteObject.login(newuser)) {
+					consoleClear();
+					printInitialmenu(newuser);
+					loop = false;
+		
+				}else {
+					consoleClear();
+					System.out.println("Já existe um usuário com esse nome, tente novamente.");
+				}	
 			}
-									
 		}catch(Exception ex) {
 			System.out.println("Ocorreu um erro inesperado. Código do erro: 00");
 			ex.printStackTrace();
@@ -42,11 +44,11 @@ public class Main {
 	private static void printInitialmenu(User user) {
 		try {
 			consoleClear();
-			System.out.println(user.getUserName() + ", operação realizada com sucesso!");
+			System.out.println(user.getUserName() + ", operação realizada com sucesso! Seu id é: " + user.getId());
 			
 			boolean continuousLoop = true;
 			while(continuousLoop) {
-				
+				consoleClear();
 				System.out.println("");
 				System.out.println("#################################");
 				System.out.println("A qualquer momento digite: ");
@@ -54,6 +56,7 @@ public class Main {
 				System.out.println("/LOGOFF - Para sair do chat");
 				System.out.println("/REFRESH - Para atualizar as mensagens pendentes");
 				System.out.println("/MSG - Para enviar mensagem para um usuário específico.");
+				System.out.println("/START-THREAD - Para enviar mensagem para um usuário específico.");
 				System.out.println("#################################");
 				System.out.println("");
 				Scanner scanner = new Scanner(System.in);
@@ -71,6 +74,9 @@ public class Main {
 						break;
 					case "/MSG":
 						sendMessage(remoteObject, user);
+						break;
+					case "/START-THREAD":
+						startThread(remoteObject, user);
 						break;
 					default:
 						consoleClear();
@@ -125,7 +131,7 @@ public class Main {
 			currentUserMessages = remoteObject.getPendingMessagesByUser(user.getId());
 			if(currentUserMessages.size()>0) {
 				for(Message msg : currentUserMessages) {
-					System.out.println(msg.getMessage());
+					System.out.println(msg.toString());
 				}
 			}else {
 				System.out.println("Você ainda não possui mensagens... isso é bem triste...");
@@ -168,6 +174,15 @@ public class Main {
 			System.out.println("Ocorreu um erro inesperado. Código do erro: 05");
 			ex.printStackTrace();
 		}		
+	}
+	
+	private static void startThread(IRmiMethods remoteObject2, User user) {
+		try {
+			UpdateUserMessages refreshRunable = new UpdateUserMessages(remoteObject, user);
+			Thread refreshUserMessagesThread = new Thread(refreshRunable);
+			refreshUserMessagesThread.setName(user.getId());
+			refreshUserMessagesThread.start();
+		}catch(Exception ignore) {}
 	}
 	
 	private static void consoleClear() {

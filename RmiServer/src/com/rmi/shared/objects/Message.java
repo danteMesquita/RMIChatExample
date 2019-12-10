@@ -31,6 +31,8 @@ public class Message implements Serializable {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	
+	public String toString() {
+		return "De: " + fromUser.getUserName() + " - Para: " + toUser.getUserName() + " - Mensage: " + message;
+	}
 	
 }

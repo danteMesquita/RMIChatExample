@@ -20,8 +20,8 @@ public class User implements Serializable {
 	//protected User() {}
 	
 	public User(String _userName){
-		id = generateUniqueId();
 		userName = _userName;
+		id = generateUniqueId();
 	}
 	
 	public String getId() {
@@ -32,13 +32,19 @@ public class User implements Serializable {
 		return userName;
 	}
 	
-	private static String generateUniqueId() {
+	private String generateUniqueId() {
 		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-			return generateString(sdf.toString(), "MD5", 32);
+			if(userName.equals("")) return "";
+			
+			String generatedString = generateString(this.userName, "MD5", 5);
+			
+			if(generatedString.length() > 5) { 
+				return generatedString.substring(0, 5);	
+			}
+			
+			return generatedString;
 
 		}catch(Exception ex) {
-			ex.printStackTrace();
 			return "";
 		}
 	}
@@ -54,11 +60,11 @@ public class User implements Serializable {
         return result;
     }
 	
-	public static void receiveMessage(Message message) {
+	public void receiveMessage(Message message) {
 		userMessages.add(message);
 	}
 	
-	public static ArrayList<Message> getMessages() {
+	public ArrayList<Message> getMessages() {
 		return userMessages;
 	}
 }
